@@ -137,7 +137,7 @@ public class CharacterMovement2D : Movement2D
         ContactFilter2D filter = new ContactFilter2D();
         filter.layerMask = 1 << 6;
         RaycastHit2D[] results = new RaycastHit2D[1];
-        int hits = ((CircleCollider2D)collider2D).Cast(Vector2.down, filter, results, groundedTolerance);
+        int hits = collider2D.Cast(Vector2.down, filter, results, groundedTolerance);
         if (hits > 0)
         {
             if (!grounded)

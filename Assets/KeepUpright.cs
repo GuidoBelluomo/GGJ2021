@@ -4,13 +4,18 @@ using UnityEngine;
 
 public class KeepUpright : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    private bool active = true;
+
+    public void SetEnabled(bool enabled)
     {
-        
+        this.active = enabled;
     }
 
-    // Update is called once per frame
+    public bool GetEnabled()
+    {
+        return active;
+    }
+
     void Update()
     {
         transform.eulerAngles = Vector3.zero;
