@@ -34,6 +34,8 @@ namespace Movement
         
         private void OnEnable()
         {
+            transform.parent = null;
+            _rigidbody2d.bodyType = RigidbodyType2D.Dynamic;
             _rigidbody2d.gravityScale = 1;
             _rigidbody2d.freezeRotation = false;
             _rigidbody2d.sharedMaterial.friction = 1;

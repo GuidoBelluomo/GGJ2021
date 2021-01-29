@@ -38,7 +38,13 @@ namespace Character
         private CharacterMovement2D _characterMovement2D;
         private RollingMovement2D _rollingMovement2D;
         private SwingingMovement2D _swingingMovement2D;
-
+        
+        public Vector2 GetBottomPosition()
+        {
+            Bounds colliderBounds = _collider2D.bounds;
+            return (Vector2)colliderBounds.center - new Vector2(0, colliderBounds.extents.y);
+        }
+        
         public MovementType GetMovementType()
         {
             return _movementType;
@@ -84,8 +90,11 @@ namespace Character
         {
             limbs[ArmSlot] = limb;
             if (limb == null) return;
-            limb.transform.parent = transform;
-            limb.transform.localPosition = new Vector3(0, limb.GetYOffset(), transform.position.z + 1);
+            Transform limbTransform;
+            (limbTransform = limb.transform).parent = transform;
+            limb.GetRigidbody2D().bodyType = RigidbodyType2D.Kinematic;
+            limbTransform.localPosition = new Vector3(0, limb.GetYOffset(), transform.position.z + 1);
+            limbTransform.localEulerAngles = new Vector3(0, 0, 0);
             limb.SetPlayerManager(this);
         }
 
@@ -93,6 +102,7 @@ namespace Character
         {
             limbs[LegSlot] = limb;
             if (limb == null) return;
+            limb.GetRigidbody2D().bodyType = RigidbodyType2D.Kinematic;
             limb.transform.parent = transform;
             Transform limbTransform;
             (limbTransform = limb.transform).localPosition =
@@ -211,6 +221,9 @@ namespace Character
             _characterMovement2D = GetComponent<CharacterMovement2D>();
             _rollingMovement2D = GetComponent<RollingMovement2D>();
             _swingingMovement2D = GetComponent<SwingingMovement2D>();
+            _characterMovement2D.SetPlayerManager(this);
+            _rollingMovement2D.SetPlayerManager(this);
+            _swingingMovement2D.SetPlayerManager(this);
             _collider2D = GetComponent<Collider2D>();
             _rigidbody2D = GetComponent<Rigidbody2D>();
 
@@ -218,6 +231,12 @@ namespace Character
             {
                 GameObject leg = Instantiate(this.testLeg);
                 SetLeg(leg.GetComponent<BaseLimb>());
+            }
+            
+            if (this.testArm != null)
+            {
+                GameObject arm = Instantiate(this.testArm);
+                SetArm(arm.GetComponent<BaseLimb>());
             }
 
             SetupLimbs();
@@ -270,13 +289,14 @@ namespace Character
             RefreshPlayer();
         }
 
-        void UpdateMovementType()
+        public void UpdateMovementType(bool forced = false)
         {
             MovementType movementType = GetMovementType();
-            if (movementType != MovementType.Swinging)
+            if (forced || movementType != MovementType.Swinging)
             {
                 BaseLimb leg = GetLeg();
-                SetMovementType( leg != null && leg.CanBeLeg() ? MovementType.Walking : MovementType.Rolling);
+                BaseLimb arm = GetArm();
+                SetMovementType( leg != null || arm != null ? MovementType.Walking : MovementType.Rolling);
             }
         }
 
@@ -285,13 +305,42 @@ namespace Character
             if (Input.GetKeyDown(KeyCode.Return))
                 SwapLimbs();
 
-            if (Input.GetMouseButton(0))
+            if (Input.GetMouseButtonDown(0))
                 GetArm()?.ArmPrimary();
+            
+            if (Input.GetMouseButtonDown(1))
+                GetArm()?.ArmSecondary();
         }
 
         public Rigidbody2D GetRigidbody2D()
         {
             return _rigidbody2D;
+        }
+
+        public void UnsetLimb(BaseLimb baseLimb)
+        {
+            if (baseLimb == null) return;
+            
+            baseLimb.transform.parent = null;
+            Rigidbody2D limbRigidbody = baseLimb.GetRigidbody2D();
+            limbRigidbody.bodyType = RigidbodyType2D.Dynamic;
+
+            if (baseLimb == GetArm())
+                SetArm(null);
+            else if (baseLimb == GetLeg())
+                SetLeg(null);
+            
+            RefreshPlayer();
+        }
+
+        public CharacterMovement2D GetCharacterMovement2D()
+        {
+            return _characterMovement2D;
+        }
+        
+        public RollingMovement2D GetRollingMovement2D()
+        {
+            return _rollingMovement2D;
         }
     }
 }

@@ -1,26 +1,23 @@
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace Movement
 {
     public class CharacterMovement2D : Movement2D
     {
         [SerializeField]
-        float accelerationFactor = 1;
-        [SerializeField]
         float groundedTolerance = 0.05f;
         [SerializeField]
-        float decelerationFactor = 1;
-        [SerializeField]
-        float maxSpeed = 10;
-        [SerializeField]
-        float acceleration = 10;
+        float speed = 5;
         [SerializeField]
         float airControlEfficiency = 1f;
         [SerializeField]
-        float jumpForce = 10;
+        float jumpForce = 4;
 
         Vector2 _movement;
+        Vector2 _externalMovement;
         Vector2 _projectedMovement;
+        Vector2 _projectedExternalMovement;
         Vector2 _gravity;
         Vector2 _groundNormal = Vector3.up;
 
@@ -41,10 +38,10 @@ namespace Movement
         {
             _gravity += Vector2.down * (9.81f * Time.deltaTime);
 
-            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * accelerationFactor * airControlEfficiency);
+            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * speed * airControlEfficiency);
             _movement += accelerationVector;
-            if (_movement.magnitude > maxSpeed)
-                _movement = _movement.normalized * maxSpeed;
+            if (_movement.magnitude > speed)
+                _movement = _movement.normalized * speed;
         }
 
         void Jump()
@@ -55,37 +52,31 @@ namespace Movement
             grounded = false;
         }
 
-        void Accelerate(float h)
+        void GroundMovement(float h)
         {
-            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * accelerationFactor);
-            _movement += accelerationVector;
-            if (_movement.magnitude > maxSpeed)
-                _movement = _movement.normalized * maxSpeed;
+            Vector2 accelerationVector = new Vector2(h * speed, 0) ;
+            _movement = accelerationVector;
+            if (_movement.magnitude > speed)
+                _movement = _movement.normalized * speed;
         }
-
-        void Decelerate(float h)
+        
+        void DecelerateExternalMovement()
         {
-            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * decelerationFactor);
-            _movement += accelerationVector;
-            if (_movement.magnitude > maxSpeed)
-                _movement = _movement.normalized * maxSpeed;
-        }
+            if (_externalMovement == Vector2.zero) return;
+            
+            float previousXSign = Mathf.Sign(_externalMovement.x);
+            float previousYSign = Mathf.Sign(_externalMovement.y);
 
-        void DecelerateToStop()
-        {
-            float previousXSign = Mathf.Sign(_movement.x);
-            float previousYSign = Mathf.Sign(_movement.y);
+            _externalMovement -= _externalMovement.normalized * (speed * Time.deltaTime) * 3.5f;
 
-            _movement -= _movement.normalized * (acceleration * decelerationFactor * Time.deltaTime);
-
-            float currentXSign = Mathf.Sign(_movement.x);
-            float currentYSign = Mathf.Sign(_movement.y);
+            float currentXSign = Mathf.Sign(_externalMovement.x);
+            float currentYSign = Mathf.Sign(_externalMovement.y);
 
             if (currentXSign != previousXSign)
-                _movement.x = 0;
+                _externalMovement.x = 0;
 
             if (currentYSign != previousYSign)
-                _movement.x = 0;
+                _externalMovement.y = 0;
         }
 
         void Move(float h)
@@ -96,25 +87,13 @@ namespace Movement
             }
             else
             {
-                if (h != 0)
-                {
-                    if ((Mathf.Sign(h) + Mathf.Sign(_movement.x)) == 0)
-                    {
-                        Decelerate(h);
-                    }
-                    else
-                    {
-                        Accelerate(h);
-                    }
-                }
-                else
-                {
-                    DecelerateToStop();
-                }
+                GroundMovement(h);
+                DecelerateExternalMovement();
             }
 
             _projectedMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _movement;
-            _rigidbody2d.velocity = _projectedMovement + _gravity;
+            _projectedExternalMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _externalMovement;
+            _rigidbody2d.velocity = _projectedMovement + _gravity + _projectedExternalMovement;
         }
 
         // Update is called once per frame
@@ -134,34 +113,24 @@ namespace Movement
             if (_gravity.y > 0)
                 return false;
 
-            ContactFilter2D filter = new ContactFilter2D();
-            filter.layerMask = 1 << 6;
-            RaycastHit2D[] results = new RaycastHit2D[1];
-            int hits = _collider2D.Cast(Vector2.down, filter, results, groundedTolerance);
-            if (hits > 0)
+            RaycastHit2D[] results = new RaycastHit2D[10];
+            int hits = _collider2D.Cast(Vector2.down, results, groundedTolerance);
+            for (int i = 0; i < hits; i++)
             {
-                if (!grounded)
+                RaycastHit2D result = results[i];
+                if (result.transform.gameObject.layer != 7 && result.point.y < _collider2D.bounds.center.y)
                 {
-                    transform.position = results[0].centroid;
+                    if (!grounded)
+                    {
+                        transform.position = result.centroid;
+                    }
                     _gravity = Vector2.zero;
-                    _groundNormal = results[0].normal;
+                    _groundNormal = result.normal;
+                    _externalMovement.y = 0;
+                    return true;
                 }
-                return true;
             }
             return false;
-        }
-
-        private void OnCollisionEnter2D(Collision2D collision)
-        {
-            if (GroundCast())
-            {
-                grounded = true;
-            }
-
-            if (ShouldKillSpeed())
-            {
-                _movement = Vector2.zero;
-            }
         }
 
         private void OnCollisionStay2D(Collision2D collision)
@@ -169,6 +138,7 @@ namespace Movement
             if (ShouldKillSpeed())
             {
                 _movement = Vector2.zero;
+                _externalMovement = Vector2.zero;
             }
         }
 
@@ -191,10 +161,20 @@ namespace Movement
 
         private void OnEnable()
         {
+            _movement = Vector2.zero;
+            _gravity = Vector2.zero;
             _rigidbody2d.gravityScale = 0;
             _rigidbody2d.freezeRotation = true;
             _rigidbody2d.sharedMaterial.friction = 0;
-            transform.rotation = Quaternion.identity;
+            _rigidbody2d.bodyType = RigidbodyType2D.Dynamic;
+            Transform myTransform = transform;
+            myTransform.parent = null;
+            myTransform.rotation = Quaternion.identity;
+        }
+
+        public void SetExternalMovement(Vector2 movement)
+        {
+            _externalMovement = movement;
         }
     }
 }

@@ -12,6 +12,8 @@ namespace Limbs
         private bool canBeArm = true;
         [SerializeField]
         protected float yOffset = 0.8f;
+        
+        private Rigidbody2D _rigidBody2D;
 
         public PlayerManager GetPlayerManager()
         {
@@ -54,9 +56,19 @@ namespace Limbs
 
         }
 
-        public virtual void OnMoved()
+        public virtual void OnSwapped()
         {
             
+        }
+
+        public virtual void Toss()
+        {
+            UnsetLimb();
+        }
+
+        public void UnsetLimb()
+        {
+            GetPlayerManager().UnsetLimb(this);
         }
 
         public void Primary(Slot slot)
@@ -95,15 +107,14 @@ namespace Limbs
             }
         }
 
-        void Start()
+        void Awake()
         {
-        
+            _rigidBody2D = GetComponent<Rigidbody2D>();
         }
 
-        // Update is called once per frame
-        void Update()
+        public Rigidbody2D GetRigidbody2D()
         {
-        
+            return _rigidBody2D;
         }
     }
 }
