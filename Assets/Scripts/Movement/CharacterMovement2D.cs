@@ -1,190 +1,200 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public class CharacterMovement2D : Movement2D
+namespace Movement
 {
-    [SerializeField]
-    float accelerationFactor = 1;
-    [SerializeField]
-    float groundedTolerance = 0.05f;
-    [SerializeField]
-    float decelerationFactor = 1;
-    [SerializeField]
-    float maxSpeed = 10;
-    [SerializeField]
-    float acceleration = 10;
-    [SerializeField]
-    float airControlEfficiency = 1f;
-    [SerializeField]
-    float jumpForce = 10;
+    public class CharacterMovement2D : Movement2D
+    {
+        [SerializeField]
+        float accelerationFactor = 1;
+        [SerializeField]
+        float groundedTolerance = 0.05f;
+        [SerializeField]
+        float decelerationFactor = 1;
+        [SerializeField]
+        float maxSpeed = 10;
+        [SerializeField]
+        float acceleration = 10;
+        [SerializeField]
+        float airControlEfficiency = 1f;
+        [SerializeField]
+        float jumpForce = 10;
 
-    [SerializeField]
-    Vector2 movement;
-    Vector2 projectedMovement;
-    Vector2 gravity;
-    Vector2 groundNormal = Vector3.up;
+        Vector2 _movement;
+        Vector2 _projectedMovement;
+        Vector2 _gravity;
+        Vector2 _groundNormal = Vector3.up;
 
 
-    new Collider2D collider2D;
+        Collider2D _collider2D;
 
-    [SerializeField]
-    bool grounded;
+        [SerializeField]
+        bool grounded;
     
-    Rigidbody2D rigidbody2d;
-    void Awake()
-    {
-        rigidbody2d = GetComponent<Rigidbody2D>();
-        collider2D = GetComponent<Collider2D>();
-    }
-
-    void AirMovement(float h)
-    {
-        gravity += Vector2.down * 9.81f * Time.deltaTime;
-
-        Vector2 accelerationVector = new Vector2(h, 0) * Time.deltaTime * acceleration * accelerationFactor * airControlEfficiency;
-        movement += accelerationVector;
-        if (movement.magnitude > maxSpeed)
-            movement = movement.normalized * maxSpeed;
-    }
-
-    void Jump()
-    {
-        groundNormal = Vector3.up;
-        gravity = transform.up * jumpForce;
-        grounded = false;
-    }
-
-    void Accelerate(float h)
-    {
-        Vector2 accelerationVector = new Vector2(h, 0) * Time.deltaTime * acceleration * accelerationFactor;
-        movement += accelerationVector;
-        if (movement.magnitude > maxSpeed)
-            movement = movement.normalized * maxSpeed;
-    }
-
-    void Decelerate(float h)
-    {
-        Vector2 accelerationVector = new Vector2(h, 0) * Time.deltaTime * acceleration * decelerationFactor;
-        movement += accelerationVector;
-        if (movement.magnitude > maxSpeed)
-            movement = movement.normalized * maxSpeed;
-    }
-
-    void DecelerateToStop()
-    {
-        float previousXSign = Mathf.Sign(movement.x);
-        float previousYSign = Mathf.Sign(movement.y);
-
-        movement -= movement.normalized * acceleration * decelerationFactor * Time.deltaTime;
-
-        float currentXSign = Mathf.Sign(movement.x);
-        float currentYSign = Mathf.Sign(movement.y);
-
-        if (currentXSign != previousXSign)
-            movement.x = 0;
-
-        if (currentYSign != previousYSign)
-            movement.x = 0;
-    }
-
-    void Move(float h)
-    {
-        if (!grounded)
+        Rigidbody2D _rigidbody2d;
+        void Awake()
         {
-            AirMovement(h);
-        }
-        else
-        {
-            if (h != 0)
-            {
-                if ((Mathf.Sign(h) + Mathf.Sign(movement.x)) == 0)
-                {
-                    Decelerate(h);
-                }
-                else
-                {
-                    Accelerate(h);
-                }
-            }
-            else
-            {
-                DecelerateToStop();
-            }
+            _rigidbody2d = GetComponent<Rigidbody2D>();
+            _collider2D = GetComponent<Collider2D>();
         }
 
-        projectedMovement = Quaternion.FromToRotation(transform.up, groundNormal) * movement;
-        rigidbody2d.velocity = projectedMovement + gravity;
-    }
+        void AirMovement(float h)
+        {
+            _gravity += Vector2.down * (9.81f * Time.deltaTime);
 
-    // Update is called once per frame
-    void Update()
-    {
-        grounded = GroundCast();
+            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * accelerationFactor * airControlEfficiency);
+            _movement += accelerationVector;
+            if (_movement.magnitude > maxSpeed)
+                _movement = _movement.normalized * maxSpeed;
+        }
 
-        if (Input.GetButtonDown("Jump"))
-            Jump();
+        void Jump()
+        {
+            if (!grounded) return;
+            _groundNormal = Vector3.up;
+            _gravity = transform.up * jumpForce;
+            grounded = false;
+        }
 
-        float h = Input.GetAxisRaw("Horizontal");
-        Move(h);
-    }
+        void Accelerate(float h)
+        {
+            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * accelerationFactor);
+            _movement += accelerationVector;
+            if (_movement.magnitude > maxSpeed)
+                _movement = _movement.normalized * maxSpeed;
+        }
 
-    bool GroundCast()
-    {
-        if (gravity.y > 0)
-            return false;
+        void Decelerate(float h)
+        {
+            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * acceleration * decelerationFactor);
+            _movement += accelerationVector;
+            if (_movement.magnitude > maxSpeed)
+                _movement = _movement.normalized * maxSpeed;
+        }
 
-        ContactFilter2D filter = new ContactFilter2D();
-        filter.layerMask = 1 << 6;
-        RaycastHit2D[] results = new RaycastHit2D[1];
-        int hits = collider2D.Cast(Vector2.down, filter, results, groundedTolerance);
-        if (hits > 0)
+        void DecelerateToStop()
+        {
+            float previousXSign = Mathf.Sign(_movement.x);
+            float previousYSign = Mathf.Sign(_movement.y);
+
+            _movement -= _movement.normalized * (acceleration * decelerationFactor * Time.deltaTime);
+
+            float currentXSign = Mathf.Sign(_movement.x);
+            float currentYSign = Mathf.Sign(_movement.y);
+
+            if (currentXSign != previousXSign)
+                _movement.x = 0;
+
+            if (currentYSign != previousYSign)
+                _movement.x = 0;
+        }
+
+        void Move(float h)
         {
             if (!grounded)
             {
-                transform.position = results[0].centroid;
-                gravity = Vector2.zero;
-                groundNormal = results[0].normal;
+                AirMovement(h);
             }
-            return true;
-        }
-        return false;
-    }
+            else
+            {
+                if (h != 0)
+                {
+                    if ((Mathf.Sign(h) + Mathf.Sign(_movement.x)) == 0)
+                    {
+                        Decelerate(h);
+                    }
+                    else
+                    {
+                        Accelerate(h);
+                    }
+                }
+                else
+                {
+                    DecelerateToStop();
+                }
+            }
 
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        if (GroundCast())
+            _projectedMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _movement;
+            _rigidbody2d.velocity = _projectedMovement + _gravity;
+        }
+
+        // Update is called once per frame
+        void Update()
         {
-            grounded = true;
+            grounded = GroundCast();
+
+            if (Input.GetButtonDown("Jump"))
+                Jump();
+
+            float h = Input.GetAxisRaw("Horizontal");
+            Move(h);
         }
 
-        if (ShouldKillSpeed())
+        bool GroundCast()
         {
-            movement = Vector2.zero;
-        }
-    }
+            if (_gravity.y > 0)
+                return false;
 
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        if (ShouldKillSpeed())
+            ContactFilter2D filter = new ContactFilter2D();
+            filter.layerMask = 1 << 6;
+            RaycastHit2D[] results = new RaycastHit2D[1];
+            int hits = _collider2D.Cast(Vector2.down, filter, results, groundedTolerance);
+            if (hits > 0)
+            {
+                if (!grounded)
+                {
+                    transform.position = results[0].centroid;
+                    _gravity = Vector2.zero;
+                    _groundNormal = results[0].normal;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        private void OnCollisionEnter2D(Collision2D collision)
         {
-            movement = Vector2.zero;
+            if (GroundCast())
+            {
+                grounded = true;
+            }
+
+            if (ShouldKillSpeed())
+            {
+                _movement = Vector2.zero;
+            }
         }
-    }
 
-    bool ShouldKillSpeed()
-    {
-        Vector2 source = (Vector2)transform.position;
-        Vector2 dir = (collider2D.bounds.extents.x + 0.05f) * projectedMovement.normalized;
+        private void OnCollisionStay2D(Collision2D collision)
+        {
+            if (ShouldKillSpeed())
+            {
+                _movement = Vector2.zero;
+            }
+        }
 
-        RaycastHit2D hit = Physics2D.Linecast(source, source + dir, 1 << 6);
+        bool ShouldKillSpeed()
+        {
+            Vector2 position = transform.position;
+            Vector2 source = position;
+            Vector2 dir = (_collider2D.bounds.extents.x + 0.05f) * _projectedMovement.normalized;
 
-        source = (Vector2)transform.position + (collider2D.bounds.extents.y * groundNormal * 0.2f);
-        RaycastHit2D hit2 = Physics2D.Linecast(source, source + dir, 1 << 6);
+            RaycastHit2D hit = Physics2D.Linecast(source, source + dir, 1 << 6);
 
-        source = (Vector2)transform.position - (collider2D.bounds.extents.y * groundNormal * 0.2f);
-        RaycastHit2D hit3 = Physics2D.Linecast(source, source + dir, 1 << 6);
+            source = position + (_collider2D.bounds.extents.y * _groundNormal * 0.2f);
+            RaycastHit2D hit2 = Physics2D.Linecast(source, source + dir, 1 << 6);
 
-        return hit.collider != null || hit2.collider != null || hit3.collider != null;
+            source = position - (_collider2D.bounds.extents.y * _groundNormal * 0.2f);
+            RaycastHit2D hit3 = Physics2D.Linecast(source, source + dir, 1 << 6);
+
+            return hit.collider != null || hit2.collider != null || hit3.collider != null;
+        }
+
+        private void OnEnable()
+        {
+            _rigidbody2d.gravityScale = 0;
+            _rigidbody2d.freezeRotation = true;
+            _rigidbody2d.sharedMaterial.friction = 0;
+            transform.rotation = Quaternion.identity;
+        }
     }
 }

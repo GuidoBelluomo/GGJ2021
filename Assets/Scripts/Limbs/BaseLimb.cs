@@ -1,102 +1,109 @@
-using System.Collections;
-using System.Collections.Generic;
+using Character;
 using UnityEngine;
 
-public class BaseLimb : MonoBehaviour
+namespace Limbs
 {
-    private PlayerManager playerManager;
-    [SerializeField]
-    private bool canBeLeg = false;
-    [SerializeField]
-    private bool canBeArm = true;
-    [SerializeField]
-    protected float yOffset = 0.8f;
-
-    public PlayerManager GetPlayerManager()
+    public class BaseLimb : MonoBehaviour
     {
-        return playerManager;
-    }
+        private PlayerManager _playerManager;
+        [SerializeField]
+        private bool canBeLeg = false;
+        [SerializeField]
+        private bool canBeArm = true;
+        [SerializeField]
+        protected float yOffset = 0.8f;
 
-    public void SetPlayerManager(PlayerManager playerManager)
-    {
-        this.playerManager = playerManager;
-    }
-
-    public bool CanBeLeg()
-    {
-        return canBeLeg;
-    }
-
-    public bool CanBeArm()
-    {
-        return canBeArm;
-    }
-
-    public float GetYOffset()
-    {
-        return yOffset;
-    }
-
-    public enum Slot
-    {
-        ARM,
-        LEG
-    }
-
-    public virtual void ArmPrimary()
-    {
-
-    }
-
-    public virtual void LegPrimary()
-    {
-
-    }
-
-    public void Primary(Slot slot)
-    {
-        switch (slot)
+        public PlayerManager GetPlayerManager()
         {
-            case Slot.ARM:
-                ArmPrimary();
-                break;
-            case Slot.LEG:
-                LegPrimary();
-                break;
+            return _playerManager;
         }
-    }
 
-    public virtual void ArmSecondary()
-    {
-
-    }
-
-    public virtual void LegSecondary()
-    {
-
-    }
-
-    public void Secondary(Slot slot)
-    {
-        switch (slot)
+        public void SetPlayerManager(PlayerManager playerManager)
         {
-            case Slot.ARM:
-                ArmSecondary();
-                break;
-            case Slot.LEG:
-                LegSecondary();
-                break;
+            this._playerManager = playerManager;
         }
-    }
 
-    void Start()
-    {
-        
-    }
+        public bool CanBeLeg()
+        {
+            return canBeLeg;
+        }
 
-    // Update is called once per frame
-    void Update()
-    {
+        public bool CanBeArm()
+        {
+            return canBeArm;
+        }
+
+        public float GetYOffset()
+        {
+            return yOffset;
+        }
+
+        public enum Slot
+        {
+            Arm,
+            Leg
+        }
+
+        public virtual void ArmPrimary()
+        {
+
+        }
+
+        public virtual void LegPrimary()
+        {
+
+        }
+
+        public virtual void OnMoved()
+        {
+            
+        }
+
+        public void Primary(Slot slot)
+        {
+            switch (slot)
+            {
+                case Slot.Arm:
+                    ArmPrimary();
+                    break;
+                case Slot.Leg:
+                    LegPrimary();
+                    break;
+            }
+        }
+
+        public virtual void ArmSecondary()
+        {
+
+        }
+
+        public virtual void LegSecondary()
+        {
+
+        }
+
+        public void Secondary(Slot slot)
+        {
+            switch (slot)
+            {
+                case Slot.Arm:
+                    ArmSecondary();
+                    break;
+                case Slot.Leg:
+                    LegSecondary();
+                    break;
+            }
+        }
+
+        void Start()
+        {
         
+        }
+
+        // Update is called once per frame
+        void Update()
+        {
+        
+        }
     }
 }

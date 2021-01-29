@@ -7,7 +7,7 @@ using UnityEngine;
 #endif
 public class CameraFollow2D : MonoBehaviour
 {
-    static CameraFollow2D instance;
+    private static CameraFollow2D _instance;
 
     [SerializeField]
     private GameObject trackedObject;
@@ -16,20 +16,25 @@ public class CameraFollow2D : MonoBehaviour
     [SerializeField]
     private Vector2 offset;
 
+    private SpriteRenderer _targetSpriteRenderer;
+
     private void Awake()
     {
-        instance = this;
+        _instance = this;
+        if (trackedObject == null) return;
+        _targetSpriteRenderer = trackedObject.GetComponent<SpriteRenderer>();
     }
 
     public static CameraFollow2D GetInstance()
     {
-        return instance;
+        return _instance;
     }
 
-    void LateUpdate()
+    void Update()
     {
-        if (trackedObject != null)
-            transform.position = new Vector3(trackedObject.transform.position.x + offset.x, trackedObject.transform.position.y + offset.y, -layersOffset);
+        if (trackedObject == null) return;
+        Vector3 position = _targetSpriteRenderer.bounds.center;
+        transform.position = new Vector3(position.x + offset.x, position.y + offset.y, -layersOffset);
     }
 
     public void SetTrackedObject(GameObject newObj)
@@ -52,9 +57,9 @@ public class CameraFollow2D : MonoBehaviour
         return layersOffset;
     }
 
-    public void SetOffset(Vector2 offset)
+    public void SetOffset(Vector2 newOffset)
     {
-        this.offset = offset;
+        this.offset = newOffset;
     }    
 
     public Vector2 GetOffset()
