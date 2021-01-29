@@ -1,3 +1,4 @@
+using Limbs;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,18 +12,16 @@ namespace Movement
         float speed = 5;
         [SerializeField]
         float airControlEfficiency = 1f;
-        [SerializeField]
-        float jumpForce = 4;
 
-        Vector2 _movement;
-        Vector2 _externalMovement;
-        Vector2 _projectedMovement;
-        Vector2 _projectedExternalMovement;
-        Vector2 _gravity;
-        Vector2 _groundNormal = Vector3.up;
+        private Vector2 _movement;
+        private Vector2 _externalMovement;
+        private Vector2 _projectedMovement;
+        private Vector2 _projectedExternalMovement;
+        private Vector2 _gravity;
+        private Vector2 _groundNormal = Vector3.up;
 
 
-        Collider2D _collider2D;
+        private Collider2D _collider2D;
 
         [SerializeField]
         bool grounded;
@@ -48,10 +47,10 @@ namespace Movement
         {
             if (!grounded) return;
             _groundNormal = Vector3.up;
-            _gravity = transform.up * jumpForce;
+            _gravity = transform.up * (GetPlayerManager()?.GetLeg()?.GetJumpForce() ?? 1.5f);
             grounded = false;
         }
-
+        
         void GroundMovement(float h)
         {
             Vector2 accelerationVector = new Vector2(h * speed, 0) ;
@@ -165,7 +164,9 @@ namespace Movement
             _gravity = Vector2.zero;
             _rigidbody2d.gravityScale = 0;
             _rigidbody2d.freezeRotation = true;
-            _rigidbody2d.sharedMaterial.friction = 0;
+            _collider2D.sharedMaterial.friction = 0;
+            _collider2D.enabled = false;
+            _collider2D.enabled = true;
             _rigidbody2d.bodyType = RigidbodyType2D.Dynamic;
             Transform myTransform = transform;
             myTransform.parent = null;

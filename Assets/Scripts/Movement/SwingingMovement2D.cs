@@ -8,10 +8,12 @@ namespace Movement
     {
         private Rigidbody2D _rigidbody2d;
         private HingeJoint2D _hingeJoint2D;
-        
+        private Collider2D _collider2D;
+
         private void Awake()
         {
             _rigidbody2d = GetComponent<Rigidbody2D>();
+            _collider2D = GetComponent<Collider2D>();
         }
 
         private void Update()
@@ -21,8 +23,16 @@ namespace Movement
                 float h = Input.GetAxisRaw("Horizontal");
                 _rigidbody2d.AddTorque(h * 0.25f);
             }
+
+            if (Input.GetButtonDown("Jump"))
+                Jump();
         }
 
+        void Jump()
+        {
+            ((GrabberLimb)GetPlayerManager().GetArm()).ReleaseWorld(false, true);
+        }
+        
         private void OnEnable()
         {
             _hingeJoint2D = GetPlayerManager().gameObject.AddComponent<HingeJoint2D>();
@@ -37,7 +47,9 @@ namespace Movement
             _rigidbody2d.velocity = Vector2.zero;
             _rigidbody2d.gravityScale = 1;
             _rigidbody2d.freezeRotation = false;
-            _rigidbody2d.sharedMaterial.friction = 0;
+            _collider2D.sharedMaterial.friction = 0;
+            _collider2D.enabled = false;
+            _collider2D.enabled = true;
         }
 
         private void OnDisable()

@@ -90,7 +90,7 @@ namespace Limbs
             _grabbingWorld = true;
         }
 
-        private void ReleaseWorld(bool adjustOffset = true, bool violent = false)
+        public void ReleaseWorld(bool adjustOffset = true, bool violent = false)
         {
             if (!_grabbingWorld) return;
 
@@ -139,7 +139,7 @@ namespace Limbs
             }
             else
             {
-                ReleaseWorld(false, true);
+                ReleaseWorld(false);
             }
         }
         

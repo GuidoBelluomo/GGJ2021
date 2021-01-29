@@ -5,18 +5,22 @@ namespace Movement
     public class RollingMovement2D : Movement2D
     {
         [SerializeField]
-        float accelerationFactor = 1.5f;
+        private float accelerationFactor = 1.5f;
         [SerializeField]
-        float decelerationFactor = 2.5f;
+        private float decelerationFactor = 2.5f;
         [SerializeField]
-        float speedGain = 10;
+        private float speedGain = 10;
         [SerializeField]
-        float maxSpeed = 10;
+        private float maxSpeed = 10;
+        [SerializeField]
+        float groundedTolerance = 0.05f;
 
-        Rigidbody2D _rigidbody2d;
+        private Rigidbody2D _rigidbody2d;
+        private Collider2D _collider2D;
         void Awake()
         {
             _rigidbody2d = GetComponent<Rigidbody2D>();
+            _collider2D = GetComponent<Collider2D>();
         }
 
         // Update is called once per frame
@@ -30,6 +34,23 @@ namespace Movement
                 else
                     _rigidbody2d.angularVelocity += h * speedGain * decelerationFactor * Time.deltaTime;
             }
+
+            if (Input.GetButtonDown("Jump"))
+                Jump();
+        }
+        
+        void Jump()
+        {
+            RaycastHit2D[] results = new RaycastHit2D[10];
+            int hits = _collider2D.Cast(Vector2.down, results, groundedTolerance);
+            for (int i = 0; i < hits; i++)
+            {
+                RaycastHit2D result = results[i];
+                if (result.transform.gameObject.layer != 7 && result.point.y < _collider2D.bounds.center.y)
+                {
+                    _rigidbody2d.AddForce(Vector3.up * 1.5f, ForceMode2D.Impulse);
+                }
+            }
         }
         
         private void OnEnable()
@@ -38,7 +59,9 @@ namespace Movement
             _rigidbody2d.bodyType = RigidbodyType2D.Dynamic;
             _rigidbody2d.gravityScale = 1;
             _rigidbody2d.freezeRotation = false;
-            _rigidbody2d.sharedMaterial.friction = 1;
+            _collider2D.sharedMaterial.friction = 1;
+            _collider2D.enabled = false;
+            _collider2D.enabled = true;
         }
     }
 }

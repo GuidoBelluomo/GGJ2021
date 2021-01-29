@@ -12,9 +12,23 @@ namespace Limbs
         private bool canBeArm = true;
         [SerializeField]
         protected float yOffset = 0.8f;
+        [SerializeField]
+        protected float jumpForce = 4f;
+        [SerializeField]
+        protected float sacrificialJumpForce = 8f;
         
         private Rigidbody2D _rigidBody2D;
 
+        public float GetJumpForce()
+        {
+            return jumpForce;
+        }
+        
+        public float GetSacrificialJumpForce()
+        {
+            return sacrificialJumpForce;
+        }
+        
         public PlayerManager GetPlayerManager()
         {
             return _playerManager;
@@ -64,6 +78,9 @@ namespace Limbs
         public virtual void Toss()
         {
             UnsetLimb();
+            Rigidbody2D myRigidbody = GetRigidbody2D();
+            myRigidbody.angularVelocity = Random.Range(25f, 50f);
+            myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity * 2f;
         }
 
         public void UnsetLimb()
