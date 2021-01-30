@@ -1,6 +1,8 @@
 using System;
 using Limbs;
 using Movement;
+using Objects;
+using Objects.Interactables;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -264,31 +266,39 @@ namespace Character
             AdjustCamera();
         }
         
-        void AttachLimb(BaseLimb limb)
+        bool AttachLimb(BaseLimb limb)
         {
-            if (limb == null) return;
+            if (limb == null) return false;
             
             if (limb.CanBeLeg() && limb.CanBeArm())
             {
                 if (!HasLeg())
                 {
                     SetLeg(limb);
+                    RefreshPlayer();
+                    return true;
                 }
                 else if (!HasArm())
                 {
                     SetArm(limb);
+                    RefreshPlayer();
+                    return true;
                 }
             }
             else if (limb.CanBeLeg() && !HasLeg())
             {
                 SetLeg(limb);
+                RefreshPlayer();
+                return true;
             }
             else if (limb.CanBeArm() && !HasArm())
             {
                 SetArm(limb);
+                RefreshPlayer();
+                return true;
             }
-            
-            RefreshPlayer();
+
+            return false;
         }
 
         void SetupLimbs()
@@ -318,9 +328,15 @@ namespace Character
             
             if (Input.GetButtonDown("Toss"))
                 GetArm()?.Toss();
-            
+
             if (Input.GetButtonDown("Interact"))
-                AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f));
+            {
+                if (AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f))) return;
+                
+                InteractableObject interactable = InteractableObject.GetClosestInteractable(GetBottomPosition(), 1f);
+                if (interactable == null) return;
+                interactable.OnInteracted.Invoke();
+            }
         }
 
         public Rigidbody2D GetRigidbody2D()
