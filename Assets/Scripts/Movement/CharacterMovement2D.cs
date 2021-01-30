@@ -115,7 +115,7 @@ namespace Movement
 
             if (!Mathf.Approximately(h, 0))
             {
-                transform.localScale = new Vector3(h, 1, 1);
+                transform.localScale = new Vector3(Mathf.Sign(h), 1, 1);
             }
 
             GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, Mathf.Abs(_movement.x));
@@ -211,6 +211,7 @@ namespace Movement
             myTransform.parent = null;
             myTransform.rotation = Quaternion.identity;
             GetPlayerManager().GetKeepUpright().SetEnabled(true);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimRollingMovement, false);
         }
 
         public void SetExternalMovement(Vector2 movement)

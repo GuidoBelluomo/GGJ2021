@@ -4,6 +4,7 @@ using Limbs;
 using Movement;
 using Objects;
 using Objects.Interactables;
+using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -50,6 +51,9 @@ namespace Character
         private RollingMovement2D _rollingMovement2D;
         private SwingingMovement2D _swingingMovement2D;
         private KeepUpright _keepUpright;
+        [SerializeField] private Animator headAnimator;
+        [SerializeField] private AnimatorController standardAnimatorController;
+        [SerializeField] private AnimatorController rollingAnimatorController;
         private List<Animator> _animators = new List<Animator>();
 
         public Vector2 GetBottomPosition()
@@ -73,16 +77,19 @@ namespace Character
                     _rollingMovement2D.enabled = true;
                     _characterMovement2D.enabled = false;
                     _swingingMovement2D.enabled = false;
+                    headAnimator.runtimeAnimatorController = rollingAnimatorController;
                     break;
                 case MovementType.Walking:
                     _rollingMovement2D.enabled = false;
                     _characterMovement2D.enabled = true;
                     _swingingMovement2D.enabled = false;
+                    headAnimator.runtimeAnimatorController = standardAnimatorController;
                     break;
                 case MovementType.Swinging:
                     _rollingMovement2D.enabled = false;
                     _characterMovement2D.enabled = false;
                     _swingingMovement2D.enabled = true;
+                    headAnimator.runtimeAnimatorController = standardAnimatorController;
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null);
@@ -211,6 +218,8 @@ namespace Character
 
             capsuleCollider2D.size = dimensions[0];
             capsuleCollider2D.offset = dimensions[1];
+            capsuleCollider2D.size *= 0.95f;
+            capsuleCollider2D.offset *= 0.95f;
         }
 
         void AdjustCollider(float previousYOffset)

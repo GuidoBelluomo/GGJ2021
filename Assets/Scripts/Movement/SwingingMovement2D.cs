@@ -53,6 +53,7 @@ namespace Movement
             _collider2D.enabled = false;
             _collider2D.enabled = true;
             GetPlayerManager().GetKeepUpright().SetEnabled(false);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimRollingMovement, true);
         }
 
         private void OnDisable()

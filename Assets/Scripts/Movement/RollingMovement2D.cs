@@ -38,6 +38,11 @@ namespace Movement
                     _rigidbody2d.angularVelocity += h * speedGain * accelerationFactor * Time.deltaTime;
                 else
                     _rigidbody2d.angularVelocity += h * speedGain * decelerationFactor * Time.deltaTime;
+
+                if (h != 0)
+                {
+                    transform.localScale = new Vector3(Mathf.Sign(-h), 1, 1);
+                }
                 
                 GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, Mathf.Abs(_rigidbody2d.angularVelocity));
             }
