@@ -1,4 +1,5 @@
 ﻿using System;
+using Character;
 using Limbs;
 
 namespace Movement
@@ -35,6 +36,7 @@ namespace Movement
         
         private void OnEnable()
         {
+            GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, 0);
             _hingeJoint2D = GetPlayerManager().gameObject.AddComponent<HingeJoint2D>();
             JointAngleLimits2D jointLimits = new JointAngleLimits2D();
             jointLimits.min = 90;

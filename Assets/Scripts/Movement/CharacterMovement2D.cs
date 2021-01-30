@@ -20,6 +20,7 @@ namespace Movement
         private Vector2 _projectedExternalMovement;
         private Vector2 _gravity;
         private Vector2 _groundNormal = Vector3.up;
+        [SerializeField] private float leglessJumpForce = 2.5f;
 
 
         private Collider2D _collider2D;
@@ -43,17 +44,23 @@ namespace Movement
             if (_movement.magnitude > speed)
                 _movement = _movement.normalized * speed;
         }
-
-        void Jump()
+        
+        public void Jump()
         {
             if (!grounded) return;
             BaseLimb leg = GetPlayerManager()?.GetLeg();
             _groundNormal = Vector3.up;
             
-            bool canBeLeg = leg.CanBeLeg();
-            float jumpForce = canBeLeg ? leg.GetJumpForce() : 1.5f;
-            _gravity = transform.up * jumpForce;
-            grounded = false;
+            if (leg != null)
+            {
+                bool canBeLeg = leg.CanBeLeg();
+                float jumpForce = canBeLeg ? leg.GetJumpForce() : leglessJumpForce;
+                _gravity = transform.up * jumpForce;
+                grounded = false;
+            }
+            
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimGrounded, false);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimJumping, true);
         }
 
         void SacrificialJump()
@@ -63,6 +70,8 @@ namespace Movement
             _gravity = transform.up * (GetPlayerManager().GetLeg().GetSacrificialJumpForce());
             GetPlayerManager().GetLeg().Sacrifice();
             grounded = false;
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimGrounded, false);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimHardJumping, true);
         }
         
         void GroundMovement(float h)
@@ -120,9 +129,15 @@ namespace Movement
         void Update()
         {
             grounded = GroundCast();
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimGrounded, grounded);
+            if (grounded)
+            {
+                GetPlayerManager().SetAnimationsBool(PlayerManager.AnimJumping, false);
+                GetPlayerManager().SetAnimationsBool(PlayerManager.AnimHardJumping, false);
+            }
 
             if (Input.GetButtonDown("Jump"))
-                if (Input.GetKey(KeyCode.LeftControl))
+                if (Input.GetButton("Modifier"))
                     SacrificialJump();
                 else
                     Jump();

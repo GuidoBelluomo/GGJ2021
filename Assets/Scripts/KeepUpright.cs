@@ -19,6 +19,7 @@ public class KeepUpright : MonoBehaviour
 
     void Update()
     {
+        if (!active) return;
         transform.eulerAngles = Vector3.zero;
     }
 }

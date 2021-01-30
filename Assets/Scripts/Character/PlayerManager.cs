@@ -12,7 +12,12 @@ namespace Character
     public class PlayerManager : MonoBehaviour
     {
         public static int AnimMoveSpeed;
-        public static int AnimRolling;
+        public static int AnimFlung;
+        public static int AnimJumping;
+        public static int AnimHardJumping;
+        public static int AnimGrounded;
+        public static int AnimTossing;
+        public static int AnimRollingMovement;
         
         public enum MovementType
         {
@@ -46,7 +51,7 @@ namespace Character
         private SwingingMovement2D _swingingMovement2D;
         private KeepUpright _keepUpright;
         private List<Animator> _animators = new List<Animator>();
-        
+
         public Vector2 GetBottomPosition()
         {
             Bounds colliderBounds = _collider2D.bounds;
@@ -262,7 +267,12 @@ namespace Character
         private void InitializeAnimationHashes()
         {
             AnimMoveSpeed = Animator.StringToHash("Speed");
-            AnimRolling = Animator.StringToHash("Rolling");
+            AnimFlung = Animator.StringToHash("Flung");
+            AnimJumping = Animator.StringToHash("Jumping");
+            AnimHardJumping = Animator.StringToHash("HardJumping");
+            AnimGrounded = Animator.StringToHash("Grounded");
+            AnimTossing = Animator.StringToHash("Tossing");
+            AnimRollingMovement = Animator.StringToHash("RollingMovement");
         }
 
         void RefreshPlayer()
@@ -339,16 +349,16 @@ namespace Character
                 GetArm()?.ArmSecondary();
             
             if (Input.GetButtonDown("Toss"))
-                GetArm()?.Toss();
+                SetAnimationsBool(AnimTossing, true);
 
             if (Input.GetButtonDown("Interact"))
             {
-                if (AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f))) return;
-                
                 InteractableObject interactable = InteractableObject.GetClosestInteractable(GetBottomPosition(), 1f);
                 if (interactable == null) return;
                 interactable.OnInteracted.Invoke();
             }
+
+            AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f));
         }
 
         public Rigidbody2D GetRigidbody2D()
@@ -369,7 +379,14 @@ namespace Character
             else if (baseLimb == GetLeg())
                 SetLeg(null);
 
-            _animators.Remove(baseLimb.GetComponent<Animator>());
+            baseLimb.SetCooldown(2.5f);
+            Animator animator = baseLimb.GetComponent<Animator>();
+            animator.SetFloat(AnimMoveSpeed, 0);
+            animator.SetBool(AnimGrounded, false);
+            animator.SetBool(AnimHardJumping, false);
+            animator.SetBool(AnimFlung, false);
+            animator.SetBool(AnimJumping, false);
+            _animators.Remove(animator);
             RefreshPlayer();
         }
 

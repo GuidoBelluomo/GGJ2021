@@ -16,9 +16,9 @@ public class CameraFollow2D : MonoBehaviour
     [SerializeField]
     private Vector2 offset;
     [SerializeField]
-    private float minX = 100f;
+    private float minX = -100f;
     [SerializeField]
-    private float maxX = -100f;
+    private float maxX = 100f;
 
     private SpriteRenderer _targetSpriteRenderer;
 

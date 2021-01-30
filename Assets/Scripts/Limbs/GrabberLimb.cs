@@ -115,6 +115,8 @@ namespace Limbs
                                                                    (Vector2.up * (angularVelocity / 50));
             }
             
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimFlung, true);
+
             _grabbingWorld = false;
             if (adjustOffset)
             {

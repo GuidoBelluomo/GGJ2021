@@ -17,6 +17,7 @@ namespace Limbs
         [SerializeField] protected float sizeDownScale;
         
         private Rigidbody2D _rigidBody2D;
+        private float _pickupColdown;
 
         public float GetJumpForce()
         {
@@ -91,10 +92,10 @@ namespace Limbs
         {
             UnsetLimb();
             Rigidbody2D myRigidbody = GetRigidbody2D();
-            float random = Random.Range(-1080f, 1080f);
-            myRigidbody.angularVelocity = (Mathf.Max(720f, Mathf.Abs(random)) * Mathf.Sign(random));
-            //myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity;
-            //myRigidbody.velocity += Vector2.down * 5f;
+            float random = Random.Range(-5000f, 5000f);
+            myRigidbody.angularVelocity = (Mathf.Max(3000f, Mathf.Abs(random)) * Mathf.Sign(random));
+            myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity;
+            myRigidbody.velocity += Vector2.down * 5f;
         }
 
         public void UnsetLimb()
@@ -160,7 +161,7 @@ namespace Limbs
             BaseLimb closestObject = null;
             foreach (BaseLimb limb in AllLimbs)
             {
-                if (limb.transform.parent != null) continue;
+                if (limb.transform.parent != null || limb._pickupColdown >= Time.time) continue;
                 float distance = Vector2.Distance((Vector2)limb.transform.position, point);
                 if (distance < curDistance)
                 {
@@ -170,6 +171,11 @@ namespace Limbs
             }
 
             return closestObject;
+        }
+
+        public void SetCooldown(float f)
+        {
+            _pickupColdown = Time.time + f;
         }
     }
 }
