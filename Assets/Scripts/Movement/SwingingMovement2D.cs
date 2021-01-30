@@ -50,6 +50,7 @@ namespace Movement
             _collider2D.sharedMaterial.friction = 0;
             _collider2D.enabled = false;
             _collider2D.enabled = true;
+            GetPlayerManager().GetKeepUpright().SetEnabled(false);
         }
 
         private void OnDisable()

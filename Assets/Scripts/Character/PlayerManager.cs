@@ -40,6 +40,7 @@ namespace Character
         private CharacterMovement2D _characterMovement2D;
         private RollingMovement2D _rollingMovement2D;
         private SwingingMovement2D _swingingMovement2D;
+        private KeepUpright _keepUpright;
         
         public Vector2 GetBottomPosition()
         {
@@ -234,6 +235,7 @@ namespace Character
             _swingingMovement2D.SetPlayerManager(this);
             _collider2D = GetComponent<Collider2D>();
             _rigidbody2D = GetComponent<Rigidbody2D>();
+            _keepUpright = GetComponentInChildren<KeepUpright>();
 
             if (this.testLeg != null)
             {
@@ -368,6 +370,11 @@ namespace Character
         public RollingMovement2D GetRollingMovement2D()
         {
             return _rollingMovement2D;
+        }
+        
+        public KeepUpright GetKeepUpright()
+        {
+            return _keepUpright;
         }
     }
 }

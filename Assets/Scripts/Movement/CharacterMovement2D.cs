@@ -188,6 +188,7 @@ namespace Movement
             Transform myTransform = transform;
             myTransform.parent = null;
             myTransform.rotation = Quaternion.identity;
+            GetPlayerManager().GetKeepUpright().SetEnabled(true);
         }
 
         public void SetExternalMovement(Vector2 movement)

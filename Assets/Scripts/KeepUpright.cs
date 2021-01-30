@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class KeepUpright : MonoBehaviour
 {
+    [SerializeField]
     private bool active = true;
 
     public void SetEnabled(bool enabled)

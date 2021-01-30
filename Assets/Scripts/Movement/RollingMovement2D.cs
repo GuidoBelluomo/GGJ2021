@@ -62,6 +62,7 @@ namespace Movement
             _collider2D.sharedMaterial.friction = 1;
             _collider2D.enabled = false;
             _collider2D.enabled = true;
+            GetPlayerManager().GetKeepUpright().SetEnabled(true);
         }
     }
 }
