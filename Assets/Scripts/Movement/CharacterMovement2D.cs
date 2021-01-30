@@ -50,6 +50,15 @@ namespace Movement
             _gravity = transform.up * (GetPlayerManager()?.GetLeg()?.GetJumpForce() ?? 1.5f);
             grounded = false;
         }
+
+        void SacrificialJump()
+        {
+            if (!grounded || !GetPlayerManager().HasLeg()) return;
+            _groundNormal = Vector3.up;
+            _gravity = transform.up * (GetPlayerManager().GetLeg().GetSacrificialJumpForce());
+            GetPlayerManager().GetLeg().Sacrifice();
+            grounded = false;
+        }
         
         void GroundMovement(float h)
         {
@@ -66,7 +75,7 @@ namespace Movement
             float previousXSign = Mathf.Sign(_externalMovement.x);
             float previousYSign = Mathf.Sign(_externalMovement.y);
 
-            _externalMovement -= _externalMovement.normalized * (speed * Time.deltaTime) * 3.5f;
+            _externalMovement -= _externalMovement.normalized * (speed * Time.deltaTime * 3.5f);
 
             float currentXSign = Mathf.Sign(_externalMovement.x);
             float currentYSign = Mathf.Sign(_externalMovement.y);
@@ -90,6 +99,11 @@ namespace Movement
                 DecelerateExternalMovement();
             }
 
+            if (!Mathf.Approximately(h, 0))
+            {
+                transform.localScale = new Vector3(h, 1, 1);
+            }
+
             _projectedMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _movement;
             _projectedExternalMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _externalMovement;
             _rigidbody2d.velocity = _projectedMovement + _gravity + _projectedExternalMovement;
@@ -101,7 +115,10 @@ namespace Movement
             grounded = GroundCast();
 
             if (Input.GetButtonDown("Jump"))
-                Jump();
+                if (Input.GetKey(KeyCode.LeftControl))
+                    SacrificialJump();
+                else
+                    Jump();
 
             float h = Input.GetAxisRaw("Horizontal");
             Move(h);

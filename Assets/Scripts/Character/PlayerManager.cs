@@ -93,6 +93,8 @@ namespace Character
             Transform limbTransform;
             (limbTransform = limb.transform).parent = transform;
             limb.GetRigidbody2D().bodyType = RigidbodyType2D.Kinematic;
+            limb.GetRigidbody2D().velocity = Vector2.zero;
+            limb.GetRigidbody2D().angularVelocity = 0;
             limbTransform.localPosition = new Vector3(0, limb.GetYOffset(), transform.position.z + 1);
             limbTransform.localEulerAngles = new Vector3(0, 0, 0);
             limb.SetPlayerManager(this);
@@ -103,6 +105,8 @@ namespace Character
             limbs[LegSlot] = limb;
             if (limb == null) return;
             limb.GetRigidbody2D().bodyType = RigidbodyType2D.Kinematic;
+            limb.GetRigidbody2D().velocity = Vector2.zero;
+            limb.GetRigidbody2D().angularVelocity = 0;
             limb.transform.parent = transform;
             Transform limbTransform;
             (limbTransform = limb.transform).localPosition =
@@ -123,6 +127,8 @@ namespace Character
 
         void SwapLimbs()
         {
+            if (!_characterMovement2D.enabled) return;
+            
             CapsuleCollider2D capsuleCollider2D = (CapsuleCollider2D) _collider2D;
             float previousYOffset = capsuleCollider2D.offset.y;
             BaseLimb temp = GetArm();
@@ -260,6 +266,8 @@ namespace Character
         
         void AttachLimb(BaseLimb limb)
         {
+            if (limb == null) return;
+            
             if (limb.CanBeLeg() && limb.CanBeArm())
             {
                 if (!HasLeg())
@@ -279,7 +287,7 @@ namespace Character
             {
                 SetArm(limb);
             }
-
+            
             RefreshPlayer();
         }
 
@@ -305,11 +313,14 @@ namespace Character
             if (Input.GetKeyDown(KeyCode.Return))
                 SwapLimbs();
 
-            if (Input.GetMouseButtonDown(0))
-                GetArm()?.ArmPrimary();
-            
-            if (Input.GetMouseButtonDown(1))
+            if (Input.GetButtonDown("Swing"))
                 GetArm()?.ArmSecondary();
+            
+            if (Input.GetButtonDown("Toss"))
+                GetArm()?.Toss();
+            
+            if (Input.GetButtonDown("Interact"))
+                AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f));
         }
 
         public Rigidbody2D GetRigidbody2D()
@@ -320,7 +331,7 @@ namespace Character
         public void UnsetLimb(BaseLimb baseLimb)
         {
             if (baseLimb == null) return;
-            
+
             baseLimb.transform.parent = null;
             Rigidbody2D limbRigidbody = baseLimb.GetRigidbody2D();
             limbRigidbody.bodyType = RigidbodyType2D.Dynamic;
