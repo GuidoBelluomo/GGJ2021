@@ -9,16 +9,12 @@ namespace Limbs
         private static readonly List<BaseLimb> AllLimbs = new List<BaseLimb>();
         
         private PlayerManager _playerManager;
-        [SerializeField]
-        private bool canBeLeg = true;
-        [SerializeField]
-        private bool canBeArm = true;
-        [SerializeField]
-        protected float yOffset = 0.8f;
-        [SerializeField]
-        protected float jumpForce = 4f;
-        [SerializeField]
-        protected float sacrificialJumpForce = 8f;
+        [SerializeField] private bool canBeLeg = true;
+        [SerializeField] private bool canBeArm = true;
+        [SerializeField] protected float yOffset = 0.8f;
+        [SerializeField] protected float jumpForce = 4f;
+        [SerializeField] protected float sacrificialJumpForce = 8f;
+        [SerializeField] protected float sizeDownScale;
         
         private Rigidbody2D _rigidBody2D;
 
@@ -56,6 +52,11 @@ namespace Limbs
         {
             return yOffset;
         }
+        
+        public float GetSizeDownscale()
+        {
+            return sizeDownScale;
+        }
 
         public enum Slot
         {
@@ -92,8 +93,8 @@ namespace Limbs
             Rigidbody2D myRigidbody = GetRigidbody2D();
             float random = Random.Range(-1080f, 1080f);
             myRigidbody.angularVelocity = (Mathf.Max(720f, Mathf.Abs(random)) * Mathf.Sign(random));
-            myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity;
-            myRigidbody.velocity += Vector2.down * 5f;
+            //myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity;
+            //myRigidbody.velocity += Vector2.down * 5f;
         }
 
         public void UnsetLimb()

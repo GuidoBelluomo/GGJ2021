@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Limbs;
 using Movement;
 using Objects;
@@ -10,6 +11,9 @@ namespace Character
 {
     public class PlayerManager : MonoBehaviour
     {
+        public static int AnimMoveSpeed;
+        public static int AnimRolling;
+        
         public enum MovementType
         {
             Rolling,
@@ -41,6 +45,7 @@ namespace Character
         private RollingMovement2D _rollingMovement2D;
         private SwingingMovement2D _swingingMovement2D;
         private KeepUpright _keepUpright;
+        private List<Animator> _animators = new List<Animator>();
         
         public Vector2 GetBottomPosition()
         {
@@ -98,9 +103,16 @@ namespace Character
             limb.GetRigidbody2D().bodyType = RigidbodyType2D.Kinematic;
             limb.GetRigidbody2D().velocity = Vector2.zero;
             limb.GetRigidbody2D().angularVelocity = 0;
+            limbTransform.localEulerAngles = Vector3.zero;
             limbTransform.localPosition = new Vector3(0, limb.GetYOffset(), transform.position.z + 1);
-            limbTransform.localEulerAngles = new Vector3(0, 0, 0);
+            
+            if (limb.CanBeLeg())
+                limbTransform.localScale = new Vector3(1, -1, 1);
+            else
+                limbTransform.localScale = new Vector3(1, 1, 1);
+            
             limb.SetPlayerManager(this);
+            _animators.Add(limb.GetComponent<Animator>());
         }
 
         public void SetLeg(BaseLimb limb)
@@ -114,8 +126,15 @@ namespace Character
             Transform limbTransform;
             (limbTransform = limb.transform).localPosition =
                 new Vector3(0, -limb.GetYOffset(), transform.position.z + 1);
-            limbTransform.localEulerAngles = new Vector3(0, 0, 180f);
+            
+            limbTransform.localEulerAngles = Vector3.zero;
+            if (limb.CanBeLeg())
+                limbTransform.localScale = new Vector3(1, 1, 1);
+            else
+                limbTransform.localScale = new Vector3(1, -1, 1);
+            
             limb.SetPlayerManager(this);
+            _animators.Add(limb.GetComponent<Animator>());
         }
 
         public bool HasArm()
@@ -145,28 +164,14 @@ namespace Character
 
         void RepositionLimbs()
         {
-            BaseLimb leg = GetLeg();
-            if (leg != null)
-            {
-                leg.transform.parent = transform;
-                Transform legTransform;
-                (legTransform = leg.transform).localPosition =
-                    new Vector3(0, -leg.GetYOffset(), transform.position.z + 1);
-                legTransform.localEulerAngles = new Vector3(0, 0, 180f);
-            }
-
-            BaseLimb arm = GetArm();
-            if (arm != null)
-            {
-                arm.transform.parent = transform;
-                arm.transform.localPosition = new Vector3(0, arm.GetYOffset(), transform.position.z + 1);
-            }
+            SwapLimbs();
+            SwapLimbs();
         }
 
         Vector2[] GetColliderDimensions(BaseLimb arm, BaseLimb leg)
         {
-            float armSize = arm != null ? arm.GetYOffset() : 0;
-            float legSize = leg != null ? leg.GetYOffset() : 0;
+            float armSize = arm != null ? arm.GetYOffset() - arm.GetSizeDownscale() : 0;
+            float legSize = leg != null ? leg.GetYOffset() - leg.GetSizeDownscale() : 0;
 
             Vector2[] dimensions = new Vector2[2];
 
@@ -227,6 +232,7 @@ namespace Character
 
         private void Awake()
         {
+            InitializeAnimationHashes();
             _characterMovement2D = GetComponent<CharacterMovement2D>();
             _rollingMovement2D = GetComponent<RollingMovement2D>();
             _swingingMovement2D = GetComponent<SwingingMovement2D>();
@@ -236,7 +242,8 @@ namespace Character
             _collider2D = GetComponent<Collider2D>();
             _rigidbody2D = GetComponent<Rigidbody2D>();
             _keepUpright = GetComponentInChildren<KeepUpright>();
-
+            _animators.Add(transform.GetChild(0).GetComponent<Animator>());
+            
             if (this.testLeg != null)
             {
                 GameObject leg = Instantiate(this.testLeg);
@@ -250,6 +257,12 @@ namespace Character
             }
 
             SetupLimbs();
+        }
+
+        private void InitializeAnimationHashes()
+        {
+            AnimMoveSpeed = Animator.StringToHash("Speed");
+            AnimRolling = Animator.StringToHash("Rolling");
         }
 
         void RefreshPlayer()
@@ -322,9 +335,6 @@ namespace Character
 
         public void Update()
         {
-            if (Input.GetKeyDown(KeyCode.Return))
-                SwapLimbs();
-
             if (Input.GetButtonDown("Swing"))
                 GetArm()?.ArmSecondary();
             
@@ -358,7 +368,8 @@ namespace Character
                 SetArm(null);
             else if (baseLimb == GetLeg())
                 SetLeg(null);
-            
+
+            _animators.Remove(baseLimb.GetComponent<Animator>());
             RefreshPlayer();
         }
 
@@ -375,6 +386,30 @@ namespace Character
         public KeepUpright GetKeepUpright()
         {
             return _keepUpright;
+        }
+
+        public void SetAnimationsFloat(int parameter, float value)
+        {
+            foreach (Animator animator in _animators)
+            {
+                animator.SetFloat(parameter, value);
+            }
+        }
+
+        public void SetAnimationsBool(int parameter, bool value)
+        {
+            foreach (Animator animator in _animators)
+            {
+                animator.SetBool(parameter, value);
+            }
+        }
+
+        public void SetAnimationsInt(int parameter, int value)
+        {
+            foreach (Animator animator in _animators)
+            {
+                animator.SetInteger(parameter, value);
+            }
         }
     }
 }

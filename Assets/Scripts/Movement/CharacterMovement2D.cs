@@ -1,3 +1,4 @@
+using Character;
 using Limbs;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -46,8 +47,12 @@ namespace Movement
         void Jump()
         {
             if (!grounded) return;
+            BaseLimb leg = GetPlayerManager()?.GetLeg();
             _groundNormal = Vector3.up;
-            _gravity = transform.up * (GetPlayerManager()?.GetLeg()?.GetJumpForce() ?? 1.5f);
+            
+            bool canBeLeg = leg.CanBeLeg();
+            float jumpForce = canBeLeg ? leg.GetJumpForce() : 1.5f;
+            _gravity = transform.up * jumpForce;
             grounded = false;
         }
 
@@ -103,6 +108,8 @@ namespace Movement
             {
                 transform.localScale = new Vector3(h, 1, 1);
             }
+
+            GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, Mathf.Abs(_movement.x));
 
             _projectedMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _movement;
             _projectedExternalMovement = Quaternion.FromToRotation(transform.up, _groundNormal) * _externalMovement;

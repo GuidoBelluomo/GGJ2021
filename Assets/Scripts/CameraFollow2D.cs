@@ -15,6 +15,10 @@ public class CameraFollow2D : MonoBehaviour
     private float layersOffset;
     [SerializeField]
     private Vector2 offset;
+    [SerializeField]
+    private float minX = 100f;
+    [SerializeField]
+    private float maxX = -100f;
 
     private SpriteRenderer _targetSpriteRenderer;
 
@@ -34,7 +38,7 @@ public class CameraFollow2D : MonoBehaviour
     {
         if (trackedObject == null) return;
         Vector3 position = _targetSpriteRenderer.bounds.center;
-        transform.position = new Vector3(position.x + offset.x, position.y + offset.y, -layersOffset);
+        transform.position = new Vector3(Mathf.Clamp(position.x + offset.x, minX, maxX), position.y + offset.y, -layersOffset);
     }
 
     public void SetTrackedObject(GameObject newObj)

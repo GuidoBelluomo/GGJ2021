@@ -1,3 +1,4 @@
+using Character;
 using UnityEngine;
 
 namespace Movement
@@ -33,6 +34,8 @@ namespace Movement
                     _rigidbody2d.angularVelocity += h * speedGain * accelerationFactor * Time.deltaTime;
                 else
                     _rigidbody2d.angularVelocity += h * speedGain * decelerationFactor * Time.deltaTime;
+                
+                GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, Mathf.Abs(_rigidbody2d.angularVelocity));
             }
 
             if (Input.GetButtonDown("Jump"))
@@ -63,6 +66,7 @@ namespace Movement
             _collider2D.enabled = false;
             _collider2D.enabled = true;
             GetPlayerManager().GetKeepUpright().SetEnabled(true);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimRolling, true);
         }
     }
 }
