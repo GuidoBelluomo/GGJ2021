@@ -82,15 +82,16 @@ namespace Limbs
         {
             UnsetLimb();
             Rigidbody2D myRigidbody = GetRigidbody2D();
-            myRigidbody.angularVelocity = Random.Range(25f, 50f);
-            myRigidbody.velocity = GetPlayerManager().transform.right * (GetPlayerManager().transform.localScale.x * 5) + GetPlayerManager().transform.up * 2f;
+            myRigidbody.angularVelocity = Random.Range(-720f * GetPlayerManager().transform.localScale.x, -1080f * GetPlayerManager().transform.localScale.x);
+            myRigidbody.velocity = GetPlayerManager().transform.right * (GetPlayerManager().transform.localScale.x * 15) + GetPlayerManager().transform.up * 5f;
         }
         
         public virtual void Sacrifice()
         {
             UnsetLimb();
             Rigidbody2D myRigidbody = GetRigidbody2D();
-            myRigidbody.angularVelocity = Random.Range(-100f, 100f);
+            float random = Random.Range(-1080f, 1080f);
+            myRigidbody.angularVelocity = (Mathf.Max(720f, Mathf.Abs(random)) * Mathf.Sign(random));
             myRigidbody.velocity = GetPlayerManager().GetRigidbody2D().velocity;
             myRigidbody.velocity += Vector2.down * 5f;
         }
