@@ -95555,7 +95555,7 @@ GameObject:
   - component: {fileID: 1467376198}
   - component: {fileID: 1467376197}
   - component: {fileID: 1467376199}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Tiles_fg
   m_TagString: Untagged
   m_Icon: {fileID: 0}
