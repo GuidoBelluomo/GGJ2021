@@ -1,5 +1,5 @@
 using Character;
-using Limbs;
+using Objects.Pickups.Limbs;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -11,8 +11,8 @@ namespace Movement
         float groundedTolerance = 0.05f;
         [SerializeField]
         float speed = 5;
-        [SerializeField]
-        float airControlEfficiency = 1f;
+        //[SerializeField]
+        //float airControlEfficiency = 1f;
 
         private Vector2 _movement;
         private Vector2 _externalMovement;
@@ -35,14 +35,9 @@ namespace Movement
             _collider2D = GetComponent<Collider2D>();
         }
 
-        void AirMovement(float h)
+        void AirMovement()
         {
             _gravity += Vector2.down * (9.81f * Time.deltaTime);
-
-            Vector2 accelerationVector = new Vector2(h, 0) * (Time.deltaTime * speed * airControlEfficiency);
-            _movement += accelerationVector;
-            if (_movement.magnitude > speed)
-                _movement = _movement.normalized * speed;
         }
         
         public void Jump()
@@ -56,6 +51,11 @@ namespace Movement
                 bool canBeLeg = leg.CanBeLeg();
                 float jumpForce = canBeLeg ? leg.GetJumpForce() : leglessJumpForce;
                 _gravity = transform.up * jumpForce;
+                grounded = false;
+            }
+            else
+            {
+                _gravity = transform.up * leglessJumpForce;
                 grounded = false;
             }
             
@@ -103,13 +103,13 @@ namespace Movement
 
         void Move(float h)
         {
+            GroundMovement(h);
             if (!grounded)
             {
-                AirMovement(h);
+                AirMovement();
             }
             else
             {
-                GroundMovement(h);
                 DecelerateExternalMovement();
             }
 
@@ -134,6 +134,10 @@ namespace Movement
             {
                 GetPlayerManager().SetAnimationsBool(PlayerManager.AnimJumping, false);
                 GetPlayerManager().SetAnimationsBool(PlayerManager.AnimHardJumping, false);
+            }
+            else
+            {
+                _groundNormal = Vector2.zero;
             }
 
             if (Input.GetButtonDown("Jump"))
@@ -217,6 +221,11 @@ namespace Movement
         public void SetExternalMovement(Vector2 movement)
         {
             _externalMovement = movement;
+        }
+
+        public void AddExternalMovement(Vector2 movement)
+        {
+            _externalMovement += movement;
         }
     }
 }

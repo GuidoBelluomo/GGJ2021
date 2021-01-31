@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Limbs;
 using Movement;
 using Objects;
 using Objects.Interactables;
+using Objects.Pickups.Limbs;
 using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -55,6 +55,8 @@ namespace Character
         [SerializeField] private AnimatorController standardAnimatorController;
         [SerializeField] private AnimatorController rollingAnimatorController;
         private List<Animator> _animators = new List<Animator>();
+        [SerializeField] private float colliderScale = 0.98f;
+        [SerializeField] private float pickupRange = 0.35f;
 
         public Vector2 GetBottomPosition()
         {
@@ -218,8 +220,8 @@ namespace Character
 
             capsuleCollider2D.size = dimensions[0];
             capsuleCollider2D.offset = dimensions[1];
-            capsuleCollider2D.size *= 0.95f;
-            capsuleCollider2D.offset *= 0.95f;
+            capsuleCollider2D.size *= colliderScale;
+            capsuleCollider2D.offset *= colliderScale;
         }
 
         void AdjustCollider(float previousYOffset)
@@ -364,10 +366,10 @@ namespace Character
             {
                 InteractableObject interactable = InteractableObject.GetClosestInteractable(GetBottomPosition(), 1f);
                 if (interactable == null) return;
-                interactable.OnInteracted.Invoke();
+                interactable.Interact();
             }
 
-            AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), 1f));
+            AttachLimb(BaseLimb.GetClosestLimb(GetBottomPosition(), pickupRange));
         }
 
         public Rigidbody2D GetRigidbody2D()
@@ -435,6 +437,21 @@ namespace Character
             foreach (Animator animator in _animators)
             {
                 animator.SetInteger(parameter, value);
+            }
+        }
+
+        public Movement2D GetMovementController()
+        {
+            switch (_movementType)
+            {
+                case MovementType.Rolling:
+                    return _rollingMovement2D;
+                case MovementType.Walking:
+                    return _characterMovement2D;
+                case MovementType.Swinging:
+                    return _swingingMovement2D;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
         }
     }

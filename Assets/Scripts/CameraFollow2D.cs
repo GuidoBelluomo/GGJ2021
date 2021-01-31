@@ -37,6 +37,10 @@ public class CameraFollow2D : MonoBehaviour
     void Update()
     {
         if (trackedObject == null) return;
+        if (_targetSpriteRenderer == null)
+            _targetSpriteRenderer = trackedObject.GetComponent<SpriteRenderer>();
+        if (_targetSpriteRenderer == null) return;
+        
         Vector3 position = _targetSpriteRenderer.bounds.center;
         transform.position = new Vector3(Mathf.Clamp(position.x + offset.x, minX, maxX), position.y + offset.y, -layersOffset);
     }

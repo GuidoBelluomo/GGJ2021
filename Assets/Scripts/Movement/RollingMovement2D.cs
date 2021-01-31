@@ -1,3 +1,4 @@
+using System;
 using Character;
 using UnityEngine;
 
@@ -17,8 +18,13 @@ namespace Movement
         float groundedTolerance = 0.05f;
         [SerializeField]
         float jumpForce = 2.5f;
+        [SerializeField]
+        float airControlSpeed = 5;
+        [SerializeField]
+        float airControlEfficiency = 1f;
+        private Vector2 _movement = Vector2.zero;
 
-        [SerializeField] private bool _grounded = false;
+        [SerializeField] private bool grounded = false;
 
         private Rigidbody2D _rigidbody2d;
         private Collider2D _collider2D;
@@ -26,6 +32,13 @@ namespace Movement
         {
             _rigidbody2d = GetComponent<Rigidbody2D>();
             _collider2D = GetComponent<Collider2D>();
+        }
+        
+        void AirMovement(float h)
+        {
+            if (grounded) return;
+            _movement = new Vector2(-h, 0) * (airControlSpeed * airControlEfficiency);
+            _rigidbody2d.AddForce(_movement, ForceMode2D.Force);
         }
 
         // Update is called once per frame
@@ -44,11 +57,13 @@ namespace Movement
                     transform.localScale = new Vector3(Mathf.Sign(-h), 1, 1);
                 }
                 
+                AirMovement(h);
+                
                 GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, Mathf.Abs(_rigidbody2d.angularVelocity));
             }
 
             GroundCast();
-            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimGrounded, _grounded);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimGrounded, grounded);
             
             if (Input.GetButtonDown("Jump"))
                 Jump();
@@ -63,18 +78,20 @@ namespace Movement
                 RaycastHit2D result = results[i];
                 if (result.transform.gameObject.layer != 7 && result.point.y < _collider2D.bounds.center.y)
                 {
-                    _grounded = true;
+                    grounded = true;
+                    _movement = Vector2.zero;
                     transform.position = result.centroid;
                     return;
                 }
             }
 
-            _grounded = false;        }
+            grounded = false;        }
 
         void Jump()
         {
-            if (_grounded)
-                _rigidbody2d.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+            if (!grounded) return;
+            _rigidbody2d.AddForce(Vector3.up * jumpForce, ForceMode2D.Impulse);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimJumping, true);
         }
 
         private void OnEnable()
@@ -88,7 +105,7 @@ namespace Movement
             _collider2D.enabled = false;
             _collider2D.enabled = true;
             GetPlayerManager().GetKeepUpright().SetEnabled(true);
-            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimFlung, true);
+            GetPlayerManager().SetAnimationsBool(PlayerManager.AnimFlung, false);
             GetPlayerManager().SetAnimationsBool(PlayerManager.AnimRollingMovement, true);
         }
     }

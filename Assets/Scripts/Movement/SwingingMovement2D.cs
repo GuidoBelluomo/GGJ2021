@@ -1,6 +1,6 @@
 ﻿using System;
 using Character;
-using Limbs;
+using Objects.Pickups.Limbs;
 
 namespace Movement
 {

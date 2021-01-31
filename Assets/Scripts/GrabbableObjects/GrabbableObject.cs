@@ -42,7 +42,7 @@ namespace GrabbableObjects
             foreach (GrabbableObject grabbableObject in GrabbableObjects)
             {
                 float distance = Vector2.Distance((Vector2)grabbableObject.transform.position, point);
-                if (distance < curDistance)
+                if (distance < curDistance && distance < maxDistance)
                 {
                     closestObject = grabbableObject;
                     curDistance = distance;

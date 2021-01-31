@@ -352,6 +352,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 4566280726953558666, guid: bfb9abd46fd322741872b980b99d12a2, type: 3}
+      propertyPath: jumpForce
+      value: 6
+      objectReference: {fileID: 0}
+    - target: {fileID: 4566280726953558666, guid: bfb9abd46fd322741872b980b99d12a2, type: 3}
+      propertyPath: sacrificialJumpForce
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 5509001450235041100, guid: bfb9abd46fd322741872b980b99d12a2, type: 3}
       propertyPath: m_RootOrder
       value: 5
@@ -405,11 +413,6 @@ PrefabInstance:
 --- !u!1 &1378071515 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6583693004283190963, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
-  m_PrefabInstance: {fileID: 6583693003446398312}
-  m_PrefabAsset: {fileID: 0}
---- !u!95 &1378071516 stripped
-Animator:
-  m_CorrespondingSourceObject: {fileID: 1378071516, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
   m_PrefabInstance: {fileID: 6583693003446398312}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1499014866
@@ -624,17 +627,5 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6583693003233793307, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
-      propertyPath: headAnimator
-      value: 
-      objectReference: {fileID: 1378071516}
-    - target: {fileID: 6583693003233793307, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
-      propertyPath: rollingAnimatorController
-      value: 
-      objectReference: {fileID: 9100000, guid: 5dde5e3d56d0c8847b558f3e0323ba17, type: 2}
-    - target: {fileID: 6583693003233793307, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
-      propertyPath: standardAnimatorController
-      value: 
-      objectReference: {fileID: 9100000, guid: 6b5bf97ff94ecbf4abc8f29ffffa09b0, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d36265b5e5451f48b1c946c39b07352, type: 3}
