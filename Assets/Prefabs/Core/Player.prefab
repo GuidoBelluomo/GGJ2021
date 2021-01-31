@@ -74,6 +74,7 @@ MonoBehaviour:
   jumpForce: 2.5
   airControlSpeed: 5
   airControlEfficiency: 0.1
+  airControlEfficiencyBooster: 0.5
   grounded: 0
 --- !u!114 &6583693003233793308
 MonoBehaviour:

@@ -16,6 +16,8 @@ namespace Objects.Environment
                 other.gameObject.GetComponent<Rigidbody2D>().AddForce(force);
                 return;
             }
+
+            if (other.gameObject.layer != 3) return;
             
             PlayerManager playerManager = other.gameObject.GetComponent<PlayerManager>();
             if (playerManager == null) return;
@@ -30,6 +32,18 @@ namespace Objects.Environment
                     playerManager.GetRigidbody2D().AddForce(force);
                     break;
             }
+        }
+
+        private void OnTriggerEnter2D(Collider2D other)
+        {
+            if (other.gameObject.layer != 3) return;
+            other.gameObject.GetComponent<PlayerManager>().GetRollingMovement2D().SetBoosted(true);
+        }
+
+        private void OnTriggerExit2D(Collider2D other)
+        {
+            if (other.gameObject.layer != 3) return;
+            other.gameObject.GetComponent<PlayerManager>().GetRollingMovement2D().SetBoosted(false);
         }
     }
 }

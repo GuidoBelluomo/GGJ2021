@@ -22,6 +22,10 @@ namespace Movement
         float airControlSpeed = 5;
         [SerializeField]
         float airControlEfficiency = 1f;
+        [SerializeField]
+        float airControlEfficiencyBooster = 0.25f;
+
+        private bool _booster = false;
         private Vector2 _movement = Vector2.zero;
 
         [SerializeField] private bool grounded = false;
@@ -37,8 +41,13 @@ namespace Movement
         void AirMovement(float h)
         {
             if (grounded) return;
-            _movement = new Vector2(-h, 0) * (airControlSpeed * airControlEfficiency);
+            _movement = new Vector2(-h, 0) * (airControlSpeed * (_booster ? airControlEfficiencyBooster: airControlEfficiency));
             _rigidbody2d.AddForce(_movement, ForceMode2D.Force);
+        }
+
+        public void SetBoosted(bool boosted)
+        {
+            _booster = boosted;
         }
 
         // Update is called once per frame
