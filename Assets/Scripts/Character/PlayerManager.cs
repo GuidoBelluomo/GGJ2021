@@ -5,7 +5,6 @@ using Movement;
 using Objects;
 using Objects.Interactables;
 using Objects.Pickups.Limbs;
-using UnityEditor.Animations;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -53,9 +52,9 @@ namespace Character
         private SwingingMovement2D _swingingMovement2D;
         private KeepUpright _keepUpright;
         [SerializeField] private Animator headAnimator;
-        [SerializeField] private AnimatorController standardAnimatorController;
-        [SerializeField] private AnimatorController rollingAnimatorController;
-        [FormerlySerializedAs("victoryAnimator")] [SerializeField] private AnimatorController victoryAnimatorController;
+        [SerializeField] private RuntimeAnimatorController standardAnimatorController;
+        [SerializeField] private RuntimeAnimatorController rollingAnimatorController;
+        [FormerlySerializedAs("victoryAnimator")] [SerializeField] private RuntimeAnimatorController victoryAnimatorController;
         private List<Animator> _animators = new List<Animator>();
         [SerializeField] private float colliderScale = 0.98f;
         [SerializeField] private float pickupRange = 0.35f;
