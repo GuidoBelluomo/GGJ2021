@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections;
 using Movement;
 using Objects;
 using Objects.Interactables;
@@ -57,6 +58,8 @@ namespace Character
         private List<Animator> _animators = new List<Animator>();
         [SerializeField] private float colliderScale = 0.98f;
         [SerializeField] private float pickupRange = 0.35f;
+        [SerializeField] private AudioClip rollingStart;
+        [FormerlySerializedAs("rollingEnd")] [SerializeField] private AudioClip rollingLoop;
 
         public Vector2 GetBottomPosition()
         {
@@ -67,6 +70,32 @@ namespace Character
         public MovementType GetMovementType()
         {
             return _movementType;
+        }
+
+        private IEnumerator PlayRollingSound()
+        {
+            AudioSource source = GetComponent<AudioSource>();
+            source.volume = 1.2f;
+            source.enabled = true;
+            source.clip = rollingStart;
+            source.loop = false;
+            source.Play();
+            yield return new WaitForSeconds(rollingStart.length);
+            source.clip = rollingLoop;
+            source.loop = true;
+            source.Play();
+            yield return null;
+        }
+
+        public void StartRollingSound()
+        {
+            StartCoroutine(PlayRollingSound());
+        }
+
+        public void EndRollingSound()
+        {
+            StopCoroutine(PlayRollingSound());
+            GetComponent<AudioSource>().enabled = false;
         }
 
         public void SetMovementType(MovementType movementType)
@@ -86,12 +115,14 @@ namespace Character
                     _characterMovement2D.enabled = true;
                     _swingingMovement2D.enabled = false;
                     headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    EndRollingSound();
                     break;
                 case MovementType.Swinging:
                     _rollingMovement2D.enabled = false;
                     _characterMovement2D.enabled = false;
                     _swingingMovement2D.enabled = true;
                     headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    EndRollingSound();
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(movementType), movementType, null);

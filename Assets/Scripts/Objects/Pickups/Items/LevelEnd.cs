@@ -13,12 +13,13 @@ namespace Objects.Pickups.Items
         [SerializeField] private string nextLevelName;
         private bool _pickedUp;
         
-        public void PlaySound(AudioClip clip)
+        public void PlaySound(AudioClip clip, float volume = 0.33f)
         {
             AudioSource source = gameObject.AddComponent<AudioSource>();
             source.clip = clip;
             source.playOnAwake = false;
             source.Play();
+            source.volume = volume;
             Destroy(source, clip.length);
         }
         
@@ -27,11 +28,11 @@ namespace Objects.Pickups.Items
             _pickedUp = true;
             GetComponent<SpriteRenderer>().enabled = false;
             PlaySound(victoryJingle);
-            yield return new WaitForSeconds(3f);
-            PlaySound(onorevole);
+            yield return new WaitForSeconds(2f);
+            PlaySound(onorevole, 1f);
             yield return new WaitForSeconds(onorevole.length);
             ScreenFade.FadeOut();
-            yield return new WaitForSeconds(3f);
+            yield return new WaitForSeconds(2f);
             SceneManager.LoadScene(nextLevelName);
             yield return null;
         }
