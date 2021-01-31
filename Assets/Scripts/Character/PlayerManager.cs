@@ -55,12 +55,18 @@ namespace Character
         [SerializeField] private Animator headAnimator;
         [SerializeField] private AnimatorController standardAnimatorController;
         [SerializeField] private AnimatorController rollingAnimatorController;
+        [FormerlySerializedAs("victoryAnimator")] [SerializeField] private AnimatorController victoryAnimatorController;
         private List<Animator> _animators = new List<Animator>();
         [SerializeField] private float colliderScale = 0.98f;
         [SerializeField] private float pickupRange = 0.35f;
         [SerializeField] private AudioClip rollingStart;
         [FormerlySerializedAs("rollingEnd")] [SerializeField] private AudioClip rollingLoop;
 
+        public void StartWinAnimation()
+        {
+            headAnimator.runtimeAnimatorController = victoryAnimatorController;
+        }
+        
         public Vector2 GetBottomPosition()
         {
             Bounds colliderBounds = _collider2D.bounds;
@@ -114,14 +120,20 @@ namespace Character
                     _rollingMovement2D.enabled = false;
                     _characterMovement2D.enabled = true;
                     _swingingMovement2D.enabled = false;
-                    headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    
+                    if (headAnimator.runtimeAnimatorController != victoryAnimatorController)
+                        headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    
                     EndRollingSound();
                     break;
                 case MovementType.Swinging:
                     _rollingMovement2D.enabled = false;
                     _characterMovement2D.enabled = false;
                     _swingingMovement2D.enabled = true;
-                    headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    
+                    if (headAnimator.runtimeAnimatorController != victoryAnimatorController)
+                        headAnimator.runtimeAnimatorController = standardAnimatorController;
+                    
                     EndRollingSound();
                     break;
                 default:

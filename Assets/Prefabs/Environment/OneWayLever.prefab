@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 172483957918262934}
   - component: {fileID: 172483957918262935}
   - component: {fileID: 172483957918262928}
+  - component: {fileID: 8816655980508322309}
   m_Layer: 0
   m_Name: OneWayLever
   m_TagString: Untagged
@@ -50,7 +51,19 @@ MonoBehaviour:
   interactableWithLimb: 1
   OnInteracted:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 0}
+        m_TargetAssemblyTypeName: Objects.Environment.MovingPlatform, Assembly-CSharp
+        m_MethodName: SetEnabled
+        m_Mode: 6
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 1
+        m_CallState: 2
 --- !u!212 &172483957918262934
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -112,7 +125,7 @@ BoxCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0.5}
@@ -147,3 +160,15 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &8816655980508322309
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 172483957918262929}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 067477d2d157f254b897b57cc9def1d1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

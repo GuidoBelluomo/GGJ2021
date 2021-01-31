@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using Character;
 using UnityEditor.SearchService;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -44,6 +45,7 @@ namespace Objects.Pickups.Items
             Destroy(GameObject.Find("Level Music"));
             if (other.gameObject.layer == 3)
             {
+                other.gameObject.GetComponent<PlayerManager>().StartWinAnimation();
                 StartCoroutine(Pickup());
             }
         }
