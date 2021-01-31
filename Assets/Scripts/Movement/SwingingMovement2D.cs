@@ -31,12 +31,12 @@ namespace Movement
 
         void Jump()
         {
+            GetComponentInChildren<SoundPlayer>().PlayRandomSound("Throw");
             ((GrabberLimb)GetPlayerManager().GetArm()).ReleaseWorld(false, true);
         }
         
         private void OnEnable()
         {
-            GetComponent<SoundPlayer>().PlayRandomSound("Throw");
             GetPlayerManager().SetAnimationsFloat(PlayerManager.AnimMoveSpeed, 0);
             _hingeJoint2D = GetPlayerManager().gameObject.AddComponent<HingeJoint2D>();
             JointAngleLimits2D jointLimits = new JointAngleLimits2D();

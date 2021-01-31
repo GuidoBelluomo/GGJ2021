@@ -80,7 +80,6 @@ namespace Movement
                 {
                     grounded = true;
                     _movement = Vector2.zero;
-                    transform.position = result.centroid;
                     return;
                 }
             }
