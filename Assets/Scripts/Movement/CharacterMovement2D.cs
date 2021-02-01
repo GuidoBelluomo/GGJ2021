@@ -208,7 +208,7 @@ namespace Movement
             _rigidbody2d.gravityScale = 0;
             _rigidbody2d.freezeRotation = true;
             _collider2D.sharedMaterial.friction = 0;
-            _collider2D.enabled = false;
+            _collider2D.enabled = false; // Resetting the collider to apply friction changes
             _collider2D.enabled = true;
             _rigidbody2d.bodyType = RigidbodyType2D.Dynamic;
             Transform myTransform = transform;

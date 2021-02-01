@@ -51,7 +51,7 @@ namespace Movement
             _rigidbody2d.gravityScale = 1;
             _rigidbody2d.freezeRotation = false;
             _collider2D.sharedMaterial.friction = 0;
-            _collider2D.enabled = false;
+            _collider2D.enabled = false; // Resetting the collider to apply friction changes
             _collider2D.enabled = true;
             GetPlayerManager().GetKeepUpright().SetEnabled(false);
             GetPlayerManager().SetAnimationsBool(PlayerManager.AnimRollingMovement, true);

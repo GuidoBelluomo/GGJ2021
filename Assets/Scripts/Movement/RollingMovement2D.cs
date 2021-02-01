@@ -1,4 +1,3 @@
-using System;
 using Character;
 using UnityEngine;
 
@@ -6,29 +5,20 @@ namespace Movement
 {
     public class RollingMovement2D : Movement2D
     {
-        [SerializeField]
-        private float accelerationFactor = 1.5f;
-        [SerializeField]
-        private float decelerationFactor = 2.5f;
-        [SerializeField]
-        private float speedGain = 10;
-        [SerializeField]
-        private float maxSpeed = 10;
-        [SerializeField]
-        float groundedTolerance = 0.05f;
-        [SerializeField]
-        float jumpForce = 2.5f;
-        [SerializeField]
-        float airControlSpeed = 5;
-        [SerializeField]
-        float airControlEfficiency = 1f;
-        [SerializeField]
-        float airControlEfficiencyBooster = 0.25f;
+        [SerializeField] private float accelerationFactor = 1.5f;
+        [SerializeField] private float decelerationFactor = 2.5f;
+        [SerializeField] private float speedGain = 10;
+        [SerializeField] private float maxSpeed = 10;
+        [SerializeField] private float groundedTolerance = 0.05f;
+        [SerializeField] private float jumpForce = 2.5f;
+        [SerializeField] private float airControlSpeed = 5;
+        [SerializeField] private float airControlEfficiency = 1f;
+        [SerializeField] private float airControlEfficiencyBooster = 0.25f;
+        [SerializeField] private bool grounded;
 
-        private bool _booster = false;
+        private bool _booster;
         private Vector2 _movement = Vector2.zero;
 
-        [SerializeField] private bool grounded = false;
 
         private Rigidbody2D _rigidbody2d;
         private Collider2D _collider2D;
@@ -93,7 +83,8 @@ namespace Movement
                 }
             }
 
-            grounded = false;        }
+            grounded = false;
+        }
 
         void Jump()
         {
@@ -110,7 +101,7 @@ namespace Movement
             _rigidbody2d.gravityScale = 1;
             _rigidbody2d.freezeRotation = false;
             _collider2D.sharedMaterial.friction = 1;
-            _collider2D.enabled = false;
+            _collider2D.enabled = false; // Resetting the collider to apply friction changes
             _collider2D.enabled = true;
             GetPlayerManager().GetKeepUpright().SetEnabled(true);
             GetPlayerManager().SetAnimationsBool(PlayerManager.AnimFlung, false);
