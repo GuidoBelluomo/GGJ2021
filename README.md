@@ -17,7 +17,7 @@ You're Buzz, a zombie head with no limbs. Play two levels where you'll find limb
 * Without limbs you'll roll, you'll behave just like a physical ball and that's exactly what you are under the hood.
 * With at least a limb you'll walk
 * Legs allow you to jump. Pressing up (or W) and Spacebar will make you jump very high and leave the leg behind.
-* Arms allow you to grab onto ceilings to swing off of them, as well as making you stop rolling.
+* Arms allow you to grab onto ceilings to swing off of them, as well as making you stop rolling. Jumping while swinging will sacrifice the limb.
 * Levers and switches can only be interacted with by throwing an arm at them. (Though actually I think legs work too, but it's pointless.)
 
 ## Controls
