@@ -1,5 +1,5 @@
 # Buzz Limb-O
-##### (A Global Game Jam 2021 Project)
+##### [A Global Game Jam 2021 Project](https://globalgamejam.org/2021/games/buzz-limb-o-3)
 
 ## Credits
 * Guido Belluomo - Code, Zombie Voice
