@@ -2,10 +2,10 @@
 ##### (A Global Game Jam 2021 Project)
 
 ## Credits
-Guido Belluomo - Code, Zombie Voice
-Daniele Coppola - Music, SFX
-Riccardo Fiorini - Pixel Art, Level Design
-Walter Samperi - Pixel Art, Level Design
+* Guido Belluomo - Code, Zombie Voice
+* Daniele Coppola - Music, SFX
+* Riccardo Fiorini - Pixel Art, Level Design
+* Walter Samperi - Pixel Art, Level Design
 
 ## Overview
 This is a game project made in five days for GGJ2021. I didn't pay a lot of attention to the architecture and design patterns to save on upfront programming cost, but it didn't really help with long-term cost. In fact, most of it became spaghetti code by the end, increasing the cost and resulting in a particularly sleepless night by the second last day.
