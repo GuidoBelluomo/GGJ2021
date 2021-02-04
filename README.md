@@ -1,7 +1,7 @@
 # Buzz Limb-O
 ##### [A Global Game Jam 2021 Project](https://globalgamejam.org/2021/games/buzz-limb-o-3)
 
-## Credits
+## Credits (alphabetical by last name)
 * Guido Belluomo - Code, Zombie Voice
 * Daniele Coppola - Music, SFX
 * Riccardo Fiorini - Pixel Art, Level Design
