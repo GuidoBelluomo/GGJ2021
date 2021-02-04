@@ -22,3 +22,6 @@ You're Buzz, a zombie head with no limbs. Play two levels where you'll find limb
 
 ## Controls
 Controls are explained at the beginning of the first level, but I feel like I need to explain the Swing/Grab action. When you found an arm, you can press Z to grab onto ceilings, which will make buzz Swing. Use the movement keys to gain momentum and Jump to sacrifice the limb and perform a big leap, or simply press Z again to let go (I may have accidentally given the character too much momentum when not sacrificing the limb, it probably works just as well as the jump)
+
+## Known Bugs
+When you have a leg, arms are hard to pickup. Literally goomba-stomp the arm to pick it up, it may take a few attempts the first time but it'll work.
